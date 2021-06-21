@@ -1,0 +1,55 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd">
+
+    <changeSet id="001-add-users-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)"/>
+            <column name="lastname" type="varchar(50)"/>
+            <column name="email" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="username" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(1000)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="create_date" type="timestamp"/>
+            <column name="edit_date" type="timestamp"/>
+            <column name="created_by" type="varchar(50)"/>
+            <column name="edited_by" type="varchar(50)"/>
+            <column name="removed" type="boolean" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="001-add-admin-user" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM users u WHERE u.id = -1
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="users">
+            <column name="id" value="-1"/>
+            <column name="name" value="Jon"/>
+            <column name="lastname" value="Admin"/>
+            <column name="email" value="none"/>
+            <column name="username" value="admin"/>
+            <column name="password" value="$2a$10$XEdD5HGWQZwfdoNSq/JTVOZQedg9V0TdiGNQ7Yz/9OTkqgzqEELEO"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
