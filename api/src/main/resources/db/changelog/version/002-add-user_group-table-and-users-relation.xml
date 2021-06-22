@@ -1,0 +1,71 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd">
+
+    <changeSet id="002-add-user_group-table-and-users-relation" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <not>
+                <tableExists tableName="user_group"/>
+                <tableExists tableName="user_group_relation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_group">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)"/>
+
+            <column name="create_date" type="timestamp"/>
+            <column name="edit_date" type="timestamp"/>
+            <column name="created_by" type="varchar(50)"/>
+            <column name="edited_by" type="varchar(50)"/>
+            <column name="removed" type="boolean" defaultValue="false"/>
+        </createTable>
+
+        <createTable tableName="user_group_relation">
+            <column name="user_id" type="bigint"/>
+            <column name="user_group_id" type="bigint"/>
+        </createTable>
+
+        <addForeignKeyConstraint  baseColumnNames="user_id"
+                                  baseTableName="user_group_relation"
+                                  constraintName="user_group_user_relation"
+                                  onDelete="CASCADE"
+                                  referencedColumnNames="id"
+                                  referencedTableName="users"/>
+
+        <addForeignKeyConstraint  baseColumnNames="user_group_id"
+                                  baseTableName="user_group_relation"
+                                  constraintName="user_group_group_relation"
+                                  onDelete="CASCADE"
+                                  referencedColumnNames="id"
+                                  referencedTableName="user_group"/>
+    </changeSet>
+
+    <changeSet id="002-add-admin-group" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_group"/>
+            <tableExists tableName="user_group_relation"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM user_group u WHERE u.id = -1
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM user_group_relation ug WHERE ug.user_group_id = -1 AND ug.user_id = -1
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="user_group">
+            <column name="id" value="-1"/>
+            <column name="name" value="admin_hidden"/>
+        </insert>
+
+        <insert tableName="user_group_relation">
+            <column name="user_group_id" value="-1"/>
+            <column name="user_id" value="-1"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

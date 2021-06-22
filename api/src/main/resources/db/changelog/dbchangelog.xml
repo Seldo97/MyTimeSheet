@@ -6,5 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <include file="version/001-add-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="version/002-add-user_group-table-and-users-relation.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
