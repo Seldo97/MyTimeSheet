@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends BaseExtendedRepository<UserEntity, Long> {
+
     @Query("SELECT u FROM UserEntity u LEFT JOIN FETCH u.userGroups WHERE u.removed IS NULL OR u.removed = false")
     List<UserEntity> findAllWithGroups();
 
