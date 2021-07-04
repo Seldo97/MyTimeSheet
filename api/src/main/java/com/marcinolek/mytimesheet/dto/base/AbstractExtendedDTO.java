@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-public class BaseExtendedDTO extends BaseDTO {
+public class AbstractExtendedDTO extends AbstractDTO {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     LocalDateTime createDate;

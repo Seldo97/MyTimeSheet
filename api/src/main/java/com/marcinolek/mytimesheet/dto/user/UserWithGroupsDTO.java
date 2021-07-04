@@ -1,17 +1,14 @@
 package com.marcinolek.mytimesheet.dto.user;
 
 import com.marcinolek.mytimesheet.dto.base.AbstractExtendedDTO;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserDTO extends AbstractExtendedDTO {
-
+public class UserWithGroupsDTO extends AbstractExtendedDTO {
     String name;
 
     String lastname;
@@ -20,4 +17,5 @@ public class UserDTO extends AbstractExtendedDTO {
 
     String username;
 
+    List<UserGroupDTO> userGroups;
 }

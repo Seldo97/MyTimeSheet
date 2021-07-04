@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Setter
 @Getter
-public class BaseExtendedEntity extends BaseEntity {
+@NoArgsConstructor
+@AllArgsConstructor
+public class AbstractExtendedEntity extends AbstractEntity {
 
     @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -32,4 +34,12 @@ public class BaseExtendedEntity extends BaseEntity {
     @Column
     protected Boolean removed = false;
 
+    public AbstractExtendedEntity(Long id, LocalDateTime createDate, LocalDateTime editDate, String createdBy, String editedBy, Boolean removed) {
+        super(id);
+        this.createDate = createDate;
+        this.editDate = editDate;
+        this.createdBy = createdBy;
+        this.editedBy = editedBy;
+        this.removed = removed;
+    }
 }

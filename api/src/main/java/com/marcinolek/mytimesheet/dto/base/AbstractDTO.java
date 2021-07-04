@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BaseDTO {
+public class AbstractDTO {
 
     private Long id;
 

@@ -1,11 +1,11 @@
 package com.marcinolek.mytimesheet.mapper.base;
 
-import com.marcinolek.mytimesheet.dto.base.BaseDTO;
-import com.marcinolek.mytimesheet.entity.base.BaseEntity;
+import com.marcinolek.mytimesheet.dto.base.AbstractDTO;
+import com.marcinolek.mytimesheet.entity.base.AbstractEntity;
 
 import java.util.List;
 
-public interface BaseMapper <TDto extends BaseDTO, TEntity extends BaseEntity> {
+public interface BaseMapper <TDto extends AbstractDTO, TEntity extends AbstractEntity> {
     TEntity toEntity(TDto dto);
 
     TDto toDto(TEntity entity);

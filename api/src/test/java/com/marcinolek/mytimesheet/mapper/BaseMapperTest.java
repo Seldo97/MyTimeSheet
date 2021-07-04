@@ -93,7 +93,6 @@ public class BaseMapperTest {
         assertThat(entity.getEmail()).isEqualTo(dto.getEmail());
         assertThat(entity.getLastname()).isEqualTo(dto.getLastname());
         assertThat(entity.getUsername()).isEqualTo(dto.getUsername());
-        assertThat(entity.getUserGroups()).hasSameSizeAs(dto.getUserGroups());
     }
 
 }
