@@ -2,6 +2,8 @@
 Time sheet web application for organization units and their employees. 
 Add your company/organization unit and employees to it, create projects and tasks. Employees keep a time sheet and track their stats.
 
+## Features and details
+
 ## Tech
 
 Technologies used in the project:
