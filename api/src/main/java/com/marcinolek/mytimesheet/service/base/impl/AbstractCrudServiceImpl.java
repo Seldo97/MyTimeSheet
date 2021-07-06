@@ -32,8 +32,8 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
 
     @Override
     public Page<TDto> findAll(PaginationRequestDTO paginationRequest) {
-        Sort sort = Sort.by(paginationRequest.getSortDirection(), paginationRequest.getOrderPropertyName());
-        PageRequest page = PageRequest.of(paginationRequest.getPage(), paginationRequest.getItemsPerPage(), sort);
+        Sort sort = Sort.by(paginationRequest.getSortDirection(), paginationRequest.getOrderBy());
+        PageRequest page = PageRequest.of(paginationRequest.getPage(), paginationRequest.getSize(), sort);
         return this.repository.findAll(page).map(this.mapper::toDto);
     }
 

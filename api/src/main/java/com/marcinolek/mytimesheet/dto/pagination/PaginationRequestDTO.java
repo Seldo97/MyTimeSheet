@@ -14,11 +14,11 @@ public class PaginationRequestDTO {
 
     private int page;
 
-    private String orderPropertyName;
+    private String orderBy;
 
     private Sort.Direction sortDirection;
 
-    private int itemsPerPage;
+    private int size;
 
     private List<CustomParamDTO> params = new ArrayList<>();
 

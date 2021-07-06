@@ -27,7 +27,7 @@ public abstract class AbstractCrudController<TEntity extends AbstractEntity, TDt
         return this.service.findAll();
     }
 
-    @PostMapping("")
+    @PostMapping("/query")
     public PaginationResponseDTO<TDto> getAll(@RequestBody PaginationRequestDTO request) {
         Page<TDto> result = this.service.findAll(request);
         return new PaginationResponseDTO<>(result);
@@ -36,6 +36,16 @@ public abstract class AbstractCrudController<TEntity extends AbstractEntity, TDt
     @GetMapping("/{id}")
     public TDto getById(@PathVariable ID id) throws WebApiException {
         return this.service.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public TDto update(@PathVariable ID id, @RequestBody TDto dto) throws WebApiException {
+        return this.service.update(dto, id);
+    }
+
+    @PostMapping("")
+    public TDto create(@RequestBody TDto dto) throws WebApiException {
+        return this.service.create(dto);
     }
 
     @DeleteMapping("/{id}")

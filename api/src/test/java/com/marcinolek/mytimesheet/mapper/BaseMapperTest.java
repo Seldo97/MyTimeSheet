@@ -1,17 +1,16 @@
 package com.marcinolek.mytimesheet.mapper;
 
-import com.google.common.collect.Lists;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
 import com.marcinolek.mytimesheet.dto.user.UserGroupDTO;
 import com.marcinolek.mytimesheet.entity.user.UserEntity;
 import com.marcinolek.mytimesheet.entity.user.UserGroupEntity;
 import com.marcinolek.mytimesheet.mapper.base.BaseMapper;
-import com.marcinolek.mytimesheet.mapper.user.UserGroupMapperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,9 +18,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest()
-//@SpringBootTest(classes = { UserGroupMapperImpl.class })
+@ContextConfiguration
 public class BaseMapperTest {
 
     @Autowired

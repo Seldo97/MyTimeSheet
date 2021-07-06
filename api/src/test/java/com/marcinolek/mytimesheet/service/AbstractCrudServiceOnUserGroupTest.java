@@ -1,11 +1,11 @@
 package com.marcinolek.mytimesheet.service;
 
-import com.marcinolek.mytimesheet.constants.exception.WebApiExceptionType;
 import com.marcinolek.mytimesheet.dto.user.UserGroupDTO;
 import com.marcinolek.mytimesheet.entity.user.UserGroupEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
 import com.marcinolek.mytimesheet.mapper.base.BaseMapper;
 import com.marcinolek.mytimesheet.repository.base.AbstractExtendedRepository;
+import com.marcinolek.mytimesheet.service.base.AbstractCrudService;
 import com.marcinolek.mytimesheet.service.user.impl.UserGroupServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -35,11 +36,10 @@ public class AbstractCrudServiceOnUserGroupTest {
     private BaseMapper<UserGroupDTO, UserGroupEntity> mapper;
 
     @Mock
-    private AbstractExtendedRepository<UserGroupEntity, Long> baseRepository;
+    private AbstractExtendedRepository<UserGroupEntity, Long> baseExtendedRepository;
 
     @InjectMocks
-    private UserGroupServiceImpl service;
-
+    private AbstractCrudService<UserGroupEntity, UserGroupDTO, Long> service = new UserGroupServiceImpl();
 
 //    @BeforeEach
 //    public void setUp() {
@@ -53,13 +53,26 @@ public class AbstractCrudServiceOnUserGroupTest {
     void testFindById() throws WebApiException {
         // given
         Long id = 3L;
-        given(this.baseRepository.findById(id)).willReturn(this.findById(id));
+        given(this.baseExtendedRepository.findById(id)).willReturn(this.findById(id));
         given(this.mapper.toDto(any())).willReturn(toDto(Objects.requireNonNull(this.findById(id).orElse(null))));
         // when
         UserGroupDTO userGroupDTO = this.service.findById(id);
         // then
         assertThat(userGroupDTO.getId()).isEqualByComparingTo(id);
         assertThat(userGroupDTO).isNotNull();
+    }
+
+    @Test
+    void testFindByIdException() throws WebApiException {
+        Long id = 10L;
+        given(this.baseExtendedRepository.findById(id)).willReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> {
+            UserGroupDTO dto = this.service.findById(id);
+        }).isInstanceOf(WebApiException.class).hasMessage("ENTITY_NOT_FOUND");
+        verify(this.baseExtendedRepository, times(1)).findById(any(Long.class));
     }
 
     @Test
@@ -71,24 +84,81 @@ public class AbstractCrudServiceOnUserGroupTest {
             Object arg0 = invocation.getArgument(0);
             assertEquals(3L, arg0);;
             return null;
-        }).when(this.baseRepository).deleteById(any(Long.class));
-        this.baseRepository.deleteById(id);
+        }).when(this.baseExtendedRepository).deleteById(any(Long.class));
+        this.baseExtendedRepository.deleteById(id);
         // than
-//        verify(this.baseRepository).deleteById(any(Long.class));
-//        verify(this.baseRepository).findById(any(Long.class));
+        verify(this.baseExtendedRepository).deleteById(any(Long.class));
     }
 
     @Test
     void testDeleteByIdException() {
         // given
         Long id = 10L;
+        given(this.baseExtendedRepository.findById(id)).willReturn(Optional.empty());
+
         // when
         // then
-        assertThat(catchThrowable(() -> { throw new WebApiException(WebApiExceptionType.DELETE_FAILED); }))
-                .isInstanceOf(WebApiException.class)
-                .hasMessage("DELETE_FAILED");
-//        verify(this.baseRepository, times(1)).findById(anyLong());
-        verify(this.baseRepository, times(0)).save(any(UserGroupEntity.class));
+        assertThatThrownBy(() -> {
+            this.service.deleteById(id);
+        }).isInstanceOf(WebApiException.class).hasMessage("DELETE_FAILED");
+        verify(this.baseExtendedRepository, times(1)).findById(any(Long.class));
+        verify(this.baseExtendedRepository, times(0)).save(any());
+    }
+
+    @Test
+    void testCreate() throws WebApiException {
+        // given
+        UserGroupDTO newGroup = new UserGroupDTO();
+        newGroup.setName("Test1");
+
+        UserGroupEntity entity = new UserGroupEntity();
+        entity.setId(1L);
+        entity.setName("Test1");
+
+        given(this.mapper.toEntity(any())).willReturn(entity);
+        given(this.baseExtendedRepository.save(entity)).willReturn(entity);
+        given(this.mapper.toDto(any())).willReturn(toDto(entity));
+        // when
+        UserGroupDTO dto = this.service.create(newGroup);
+        // than
+        verify(this.baseExtendedRepository, times(1)).save(any());
+        assertThat(entity.getRemoved()).isFalse();
+        assertThat(dto).isNotNull();
+        assertThat(dto.getName()).isEqualTo(entity.getName());
+    }
+
+    @Test
+    void testUpdate() throws WebApiException {
+        // given
+        UserGroupDTO newGroup = new UserGroupDTO();
+        newGroup.setId(1L);
+        newGroup.setName("Test2");
+        newGroup.setEditDate(LocalDateTime.now().minusDays(1));
+
+        UserGroupEntity entity = new UserGroupEntity();
+        entity.setId(1L);
+        entity.setName("Test1");
+        newGroup.setEditDate(LocalDateTime.now().minusDays(1));
+
+        UserGroupEntity newValuesEntity = new UserGroupEntity();
+        newValuesEntity.setId(1L);
+        newValuesEntity.setName("Test2");
+
+        given(this.baseExtendedRepository.findById(1L)).willReturn(Optional.of(entity));
+        given(this.mapper.toEntity(any())).willReturn(newValuesEntity);
+        given(this.baseExtendedRepository.save(entity)).willReturn(entity);
+        given(this.mapper.toDto(any())).willReturn(toDto(newValuesEntity));
+        // when
+        UserGroupDTO dto = this.service.update(newGroup, 1L);
+        // than
+        verify(this.baseExtendedRepository, times(1)).save(any());
+        assertThat(entity.getRemoved()).isFalse();
+        assertThat(dto).isNotNull();
+        assertThat(entity).isNotNull();
+        assertThat(dto.getName()).isEqualTo(entity.getName());
+        assertThat(entity.getName()).isEqualTo("Test2");
+        assertThat(entity.getId()).isEqualByComparingTo(1L);
+        assertThat(entity.getEditDate()).isAfter(newGroup.getEditDate());
     }
 
     private Optional<UserGroupEntity> findById(Long id) {
@@ -106,6 +176,15 @@ public class AbstractCrudServiceOnUserGroupTest {
         dto.setEditDate(entity.getEditDate());
         dto.setCreateDate(entity.getCreateDate());
         return dto;
+    }
+
+    private UserGroupEntity toEntity(UserGroupDTO dto) {
+        UserGroupEntity entity = new UserGroupEntity();
+        entity.setId(dto.getId());
+        entity.setName(dto.getName());
+        entity.setEditDate(dto.getEditDate());
+        entity.setCreateDate(dto.getCreateDate());
+        return entity;
     }
 
     private List<UserGroupEntity> userGroupData() {

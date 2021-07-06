@@ -28,6 +28,7 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
         try {
             return mapper.toDto(this.extendedRepository.save(entity));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -40,16 +41,17 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
         try {
             return this.mapper.toDto(this.extendedRepository.save(entity));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
 
     @Override
     public void deleteById(ID id) throws WebApiException {
-        TEntity entity = this.extendedRepository.findById(id)
-                .orElseThrow(() -> new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND));
-        entity.setRemoved(true);
         try {
+            TEntity entity = this.extendedRepository.findById(id)
+                    .orElseThrow();
+            entity.setRemoved(true);
             this.extendedRepository.save(entity);
         } catch (Exception e) {
             throw new WebApiException(WebApiExceptionType.DELETE_FAILED);
