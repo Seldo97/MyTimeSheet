@@ -13,23 +13,14 @@ import java.util.List;
 @Setter
 public class UserEntity extends AbstractExtendedEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
-
-    @Column
     private String name;
 
-    @Column
     private String lastname;
 
-    @Column
     private String email;
 
-    @Column
     private String username;
 
-    @Column
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)

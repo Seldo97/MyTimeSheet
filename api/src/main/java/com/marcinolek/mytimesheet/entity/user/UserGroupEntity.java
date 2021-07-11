@@ -6,10 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Table(name = "user_group")
 @Entity
@@ -19,8 +18,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UserGroupEntity extends AbstractExtendedEntity {
 
-    @Column
-    String name;
+    private String name;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userGroup")
+    private Set<Permission> permissions;
 
     public UserGroupEntity(Long id, LocalDateTime createDate, LocalDateTime editDate, String createdBy, String editedBy, Boolean removed, String name) {
         super(id, createDate, editDate, createdBy, editedBy, removed);

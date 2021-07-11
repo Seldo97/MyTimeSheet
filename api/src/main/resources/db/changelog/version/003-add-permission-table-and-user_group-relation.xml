@@ -5,4 +5,48 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
         http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.0.xsd">
 
+    <changeSet id="003-add-permission-table-and-user_group-relation" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_group"/>
+            <not>
+                <tableExists tableName="permission"/>
+            </not>
+        </preConditions>
+        <createTable tableName="permission">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_group_id" type="bigint"/>
+            <column name="category" type="varchar(50)"/>
+            <column name="name" type="varchar(50)"/>
+        </createTable>
+
+        <addForeignKeyConstraint  baseColumnNames="user_group_id"
+                                  baseTableName="permission"
+                                  constraintName="user_group_permission_rel"
+                                  onDelete="CASCADE"
+                                  referencedColumnNames="id"
+                                  referencedTableName="user_group"/>
+    </changeSet>
+
+    <changeSet id="003-add-admin-permission" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_group"/>
+            <tableExists tableName="permission"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM permission p WHERE p.id = -1
+            </sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM user_group p WHERE p.id = -1
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="permission">
+            <column name="id" value="-1"/>
+            <column name="user_group_id" value="-1"/>
+            <column name="category" value="ADMIN"/>
+            <column name="name" value="ADMIN_PERMISSION"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

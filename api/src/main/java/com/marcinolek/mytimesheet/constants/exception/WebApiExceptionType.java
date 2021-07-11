@@ -6,5 +6,6 @@ public enum WebApiExceptionType {
     NO_PERMISSION_TO_RESOURCE,
     ENTITY_NOT_FOUND,
     SAVE_FAILED,
-    DELETE_FAILED
+    DELETE_FAILED,
+    USER_NOT_FOUND;
 }

@@ -14,4 +14,6 @@ public interface UserService extends AbstractCrudExtendedService<UserEntity, Use
 
     List<UserWithGroupsDTO> findAllWithGroups() throws WebApiException;
 
+    UserDTO findUserByUsername(String username) throws WebApiException;
+
 }

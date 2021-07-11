@@ -1,6 +1,6 @@
 package com.marcinolek.mytimesheet.constants.permission;
 
-public enum PermissionGroup {
+public enum PermissionCategory {
     ADMIN,
     USER,
     USER_GROUP,

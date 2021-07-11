@@ -17,21 +17,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AbstractExtendedEntity extends AbstractEntity {
 
-    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     protected LocalDateTime createDate;
 
-    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     protected LocalDateTime editDate;
 
-    @Column
     protected String createdBy;
 
-    @Column
     protected String editedBy;
 
-    @Column
     protected Boolean removed = false;
 
     public AbstractExtendedEntity(Long id, LocalDateTime createDate, LocalDateTime editDate, String createdBy, String editedBy, Boolean removed) {
