@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -16,28 +17,38 @@ import static java.lang.String.format;
 public class JwtTokenUtil {
 
     private final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
-    private final String jwtSecret = "daNBdakhj324gfdEWRfd934";
-    private final long expirationDate = 864000000; // one day
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expirationTime}")
+    private long expirationDate;
+
+    @Value("${jwt.expirationTime.multiplier}")
+    private long multiplier;
 
     public String generateToken(UserDTO user) {
         return Jwts.builder()
                 .setSubject(format("%s,%s", user.getId(), user.getUsername()))
                 .setIssuer("com.marcinolek")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationDate * 7))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationDate * multiplier))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
     public Long getUserId(String jwtToken) {
-        return Long.parseLong(this.getClaims(jwtToken).getSubject().split(",")[1]);
+        jwtToken = getClearToken(jwtToken);
+        return Long.parseLong(this.getClaims(jwtToken).getSubject().split(",")[0]);
     }
 
     public String getUsername(String jwtToken) {
+        jwtToken = getClearToken(jwtToken);
         return this.getClaims(jwtToken).getSubject().split(",")[1];
     }
 
     public Date getExpirationDate(String jwtToken) {
+        jwtToken = getClearToken(jwtToken);
         return this.getClaims(jwtToken).getExpiration();
     }
 
@@ -64,6 +75,10 @@ public class JwtTokenUtil {
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(jwtToken)
                 .getBody();
+    }
+
+    public static String getClearToken(String token) {
+        return token.startsWith("Bearer ") ? token.substring(7) : token;
     }
 
 }

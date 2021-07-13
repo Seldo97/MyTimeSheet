@@ -1,14 +1,17 @@
 package com.marcinolek.mytimesheet.service.user.impl;
 
 import com.marcinolek.mytimesheet.constants.exception.WebApiExceptionType;
+import com.marcinolek.mytimesheet.dto.user.PermissionDTO;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
 import com.marcinolek.mytimesheet.dto.user.UserWithGroupsDTO;
 import com.marcinolek.mytimesheet.dto.user.UserWithPasswordDTO;
 import com.marcinolek.mytimesheet.entity.user.UserEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
+import com.marcinolek.mytimesheet.mapper.user.PermissionMapper;
 import com.marcinolek.mytimesheet.mapper.user.UserMapper;
 import com.marcinolek.mytimesheet.mapper.user.UserWithGroupsMapper;
 import com.marcinolek.mytimesheet.mapper.user.UserWithPasswordMapper;
+import com.marcinolek.mytimesheet.repository.user.PermissionRepository;
 import com.marcinolek.mytimesheet.repository.user.UserRepository;
 import com.marcinolek.mytimesheet.service.base.impl.AbstractCrudExtendedServiceImpl;
 import com.marcinolek.mytimesheet.service.base.impl.AbstractCrudServiceImpl;
@@ -21,12 +24,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity, UserDTO, Long> implements UserService, UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PermissionRepository permissionRepository;
 
     @Autowired
     UserWithGroupsMapper userWithGroupsMapper;
@@ -36,6 +43,9 @@ public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity,
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    PermissionMapper permissionMapper;
 
     @Override
     public UserWithGroupsDTO findByIdWithGroups(Long id) throws WebApiException {
@@ -52,6 +62,11 @@ public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity,
     public UserDTO findUserByUsername(String username) throws WebApiException {
         return this.userMapper.toDto(userRepository.findByUsernameIgnoreCase(username).
                 orElseThrow(() -> new UsernameNotFoundException(WebApiExceptionType.USER_NOT_FOUND.toString())));
+    }
+
+    @Override
+    public Set<PermissionDTO> getPermissionsByUserId(Long id) {
+        return this.permissionMapper.toDtoSet(this.permissionRepository.getPermissionsByUserId(id));
     }
 
     @Override

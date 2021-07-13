@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Table(name = "user_group")
@@ -20,8 +21,11 @@ public class UserGroupEntity extends AbstractExtendedEntity {
 
     private String name;
 
+    @ManyToMany(mappedBy = "userGroups")
+    List<UserEntity> users;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userGroup")
-    private Set<Permission> permissions;
+    private Set<PermissionEntity> permissions;
 
     public UserGroupEntity(Long id, LocalDateTime createDate, LocalDateTime editDate, String createdBy, String editedBy, Boolean removed, String name) {
         super(id, createDate, editDate, createdBy, editedBy, removed);

@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class AbstractCrudController<TEntity extends AbstractEntity, TDto extends AbstractDTO, ID extends Serializable> {
+public abstract class AbstractCrudController<TEntity extends AbstractEntity, TDto extends AbstractDTO, ID extends Serializable>
+        extends BaseController {
 
     @Autowired
     private AbstractCrudService<TEntity, TDto, ID> service;

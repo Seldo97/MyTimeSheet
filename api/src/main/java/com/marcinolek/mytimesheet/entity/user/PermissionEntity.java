@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-public class Permission extends AbstractEntity {
+public class PermissionEntity extends AbstractEntity {
 
     private String category;
 

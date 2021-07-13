@@ -23,6 +23,8 @@ public class UserEntity extends AbstractExtendedEntity {
 
     private String password;
 
+
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_group_relation",
