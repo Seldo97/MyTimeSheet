@@ -5,7 +5,7 @@ import com.marcinolek.mytimesheet.entity.base.AbstractEntity;
 
 import java.util.List;
 
-public interface BaseMapper <TDto extends AbstractDTO, TEntity extends AbstractEntity> {
+public interface AbstractMapper<TDto extends AbstractDTO, TEntity extends AbstractEntity> {
     TEntity toEntity(TDto dto);
 
     TDto toDto(TEntity entity);

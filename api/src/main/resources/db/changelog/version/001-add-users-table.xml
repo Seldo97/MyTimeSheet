@@ -52,4 +52,41 @@
             <column name="password" value="$2a$10$XEdD5HGWQZwfdoNSq/JTVOZQedg9V0TdiGNQ7Yz/9OTkqgzqEELEO"/>
         </insert>
     </changeSet>
+
+    <changeSet id="001-add-users-for-tests" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM users u WHERE u.id = -1
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM users u WHERE u.id = -2
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM users u WHERE u.id = -3
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="users">
+            <column name="password" value="$2a$10$zrpKd78O/8NXBGqMCnNdEOe7DcOCNIDOtQzl8EgJ3.MsWhjEyred2"/>
+            <where>id=-1</where>
+        </update>
+
+        <insert tableName="users">
+            <column name="id" value="-2"/>
+            <column name="name" value="James"/>
+            <column name="lastname" value="Tester"/>
+            <column name="email" value="example1@example1.eg"/>
+            <column name="username" value="tester1"/>
+            <column name="password" value="$2a$10$5yj46CsHVIcu4gtKQQR4QOhr/cnm6ae6tOyJ9fGuXo//2rPObVhl2"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="-3"/>
+            <column name="name" value="Peter"/>
+            <column name="lastname" value="Tester"/>
+            <column name="email" value="example2@example2.eg"/>
+            <column name="username" value="tester2"/>
+            <column name="password" value="$2a$10$58cVpAuMkuK04Duml3x2IObGWcH/tY4/OESlNxPLqSsmc.5YJdtVO"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

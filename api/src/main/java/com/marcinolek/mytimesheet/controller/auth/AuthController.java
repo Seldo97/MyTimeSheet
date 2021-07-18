@@ -1,16 +1,17 @@
 package com.marcinolek.mytimesheet.controller.auth;
 
-import com.marcinolek.mytimesheet.config.security.jwt.JwtTokenUtil;
 import com.marcinolek.mytimesheet.constants.exception.WebApiExceptionType;
+import com.marcinolek.mytimesheet.constants.permission.RoleType;
 import com.marcinolek.mytimesheet.controller.base.BaseController;
 import com.marcinolek.mytimesheet.dto.auth.AuthRequestDTO;
-import com.marcinolek.mytimesheet.dto.user.PermissionDTO;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
 import com.marcinolek.mytimesheet.exception.WebApiException;
-import com.marcinolek.mytimesheet.service.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +19,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
 
 @RequestMapping("/api/auth")
 @RestController
 public class AuthController extends BaseController {
+
+    private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -38,7 +40,7 @@ public class AuthController extends BaseController {
 
             return user;
         } catch (BadCredentialsException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
             throw new WebApiException(WebApiExceptionType.BAD_CREDENTIALS);
         }
     }
@@ -48,8 +50,26 @@ public class AuthController extends BaseController {
        return this.jwtTokenUtil.getUserId(token);
     }
 
-    @GetMapping("/authenticated")
+    @GetMapping("/is-authenticated")
     public boolean isUserAuthenticated() {
+        return true;
+    }
+
+    @GetMapping("/is-admin")
+    @Secured(RoleType.ADMIN)
+    public boolean isUserAdmin() {
+        return true;
+    }
+
+    @GetMapping("/is-common-user")
+    @Secured(RoleType.COMMON_USER)
+    public boolean isUserCommonUser() {
+        return true;
+    }
+
+    @GetMapping("/is-premium-user")
+    @Secured(RoleType.PREMIUM_USER)
+    public boolean isUserPremiumUser() {
         return true;
     }
 

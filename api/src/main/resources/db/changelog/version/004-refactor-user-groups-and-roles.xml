@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="004-drop-user-group_table-and-relations" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="permission"/>
+            <tableExists tableName="users"/>
+            <tableExists tableName="user_group"/>
+            <tableExists tableName="user_group_relation"/>
+        </preConditions>
+
+        <dropForeignKeyConstraint baseTableName="permission"
+                                  constraintName="user_group_permission_rel"/>
+        <dropForeignKeyConstraint baseTableName="user_group_relation"
+                                  constraintName="user_group_user_relation"/>
+        <dropForeignKeyConstraint baseTableName="user_group_relation"
+                                  constraintName="user_group_group_relation"/>
+
+        <dropTable cascadeConstraints="true"
+                   tableName="permission"/>
+        <dropTable cascadeConstraints="true"
+                   tableName="user_group_relation"/>
+        <dropTable cascadeConstraints="true"
+                   tableName="user_group"/>
+
+    </changeSet>
+
+    <changeSet id="004-add-user-role-table-and-relation" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <not>
+                <tableExists tableName="role"/>
+                <tableExists tableName="user_role"/>
+            </not>
+        </preConditions>
+        <createTable tableName="role">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)"/>
+        </createTable>
+
+        <createTable tableName="user_role">
+            <column name="user_id" type="bigint"/>
+            <column name="role_id" type="bigint"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_role"
+                                 constraintName="fk_user_user_role_relation"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user_role"
+                                 constraintName="fk_role_user_role_relation"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+
+    <changeSet id="004-add-default-roles" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <tableExists tableName="role"/>
+            <tableExists tableName="user_role"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM role u WHERE u.id = 1
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM role u WHERE u.id = 2
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM role u WHERE u.id = 3
+            </sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM users u WHERE u.id = -1
+            </sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM users u WHERE u.id = -2
+            </sqlCheck>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM users u WHERE u.id = -3
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="role">
+            <column name="id" value="1"/>
+            <column name="name" value="ADMIN"/>
+        </insert>
+        <insert tableName="role">
+            <column name="id" value="2"/>
+            <column name="name" value="COMMON_USER"/>
+        </insert>
+        <insert tableName="role">
+            <column name="id" value="3"/>
+            <column name="name" value="PREMIUM_USER"/>
+        </insert>
+
+        <insert tableName="user_role">
+            <column name="role_id" value="1"/>
+            <column name="user_id" value="-1"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="role_id" value="2"/>
+            <column name="user_id" value="-1"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="role_id" value="3"/>
+            <column name="user_id" value="-1"/>
+        </insert>
+
+        <insert tableName="user_role">
+            <column name="role_id" value="2"/>
+            <column name="user_id" value="-2"/>
+        </insert>
+
+        <insert tableName="user_role">
+            <column name="role_id" value="2"/>
+            <column name="user_id" value="-3"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

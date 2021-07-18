@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -21,5 +23,7 @@ public class UserWithPasswordDTO extends AbstractExtendedDTO {
     String username;
 
     String password;
+
+    List<RoleDTO> roles;
 
 }

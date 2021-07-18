@@ -8,5 +8,6 @@
     <include file="version/001-add-users-table.xml" relativeToChangelogFile="true"/>
     <include file="version/002-add-user_group-table-and-users-relation.xml" relativeToChangelogFile="true"/>
     <include file="version/003-add-permission-table-and-user_group-relation.xml" relativeToChangelogFile="true"/>
+    <include file="version/004-refactor-user-groups-and-roles.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

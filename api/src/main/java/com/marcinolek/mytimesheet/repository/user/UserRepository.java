@@ -13,14 +13,10 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends AbstractExtendedRepository<UserEntity, Long> {
 
-    @EntityGraph(attributePaths = "userGroups")
-    @Query("SELECT u FROM UserEntity u WHERE u.removed IS NULL OR u.removed = false")
-    List<UserEntity> findAllWithGroups();
-
-    @EntityGraph(attributePaths = "userGroups")
-    @Query("SELECT u FROM UserEntity u WHERE u.id = :id " +
+    @EntityGraph(attributePaths = "roles")
+    @Query("SELECT u FROM UserEntity u WHERE u.id = ?1 " +
             "AND (u.removed IS NULL OR u.removed = false)")
-    Optional<UserEntity> findByIdWithGroups(@Param("id") Long id);
+    Optional<UserEntity> findByIdWithRoles(Long id);
 
     Optional<UserEntity> findByUsernameIgnoreCase(String username);
 }

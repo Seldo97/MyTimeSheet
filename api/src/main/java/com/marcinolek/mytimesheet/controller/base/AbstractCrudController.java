@@ -5,7 +5,7 @@ import com.marcinolek.mytimesheet.dto.pagination.PaginationRequestDTO;
 import com.marcinolek.mytimesheet.dto.pagination.PaginationResponseDTO;
 import com.marcinolek.mytimesheet.entity.base.AbstractEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
-import com.marcinolek.mytimesheet.mapper.base.BaseMapper;
+import com.marcinolek.mytimesheet.mapper.base.AbstractMapper;
 import com.marcinolek.mytimesheet.service.base.AbstractCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ public abstract class AbstractCrudController<TEntity extends AbstractEntity, TDt
     private AbstractCrudService<TEntity, TDto, ID> service;
 
     @Autowired
-    private BaseMapper<TDto, TEntity> mapper;
+    private AbstractMapper<TDto, TEntity> mapper;
 
     @GetMapping("")
     public List<TDto> getAll() {

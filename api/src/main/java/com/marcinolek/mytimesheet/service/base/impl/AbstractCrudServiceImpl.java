@@ -5,9 +5,11 @@ import com.marcinolek.mytimesheet.dto.base.AbstractDTO;
 import com.marcinolek.mytimesheet.dto.pagination.PaginationRequestDTO;
 import com.marcinolek.mytimesheet.entity.base.AbstractEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
-import com.marcinolek.mytimesheet.mapper.base.BaseMapper;
+import com.marcinolek.mytimesheet.mapper.base.AbstractMapper;
 import com.marcinolek.mytimesheet.repository.base.AbstractRepository;
 import com.marcinolek.mytimesheet.service.base.AbstractCrudService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,11 +21,13 @@ import java.util.List;
 
 public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TDto extends AbstractDTO, ID extends Serializable> implements AbstractCrudService<TEntity, TDto, ID> {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     protected AbstractRepository<TEntity, ID> repository;
 
     @Autowired
-    protected BaseMapper<TDto, TEntity> mapper;
+    protected AbstractMapper<TDto, TEntity> mapper;
 
     @Override
     public List<TDto> findAll() {
@@ -40,17 +44,24 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
     @Override
     public TDto findById(ID id) throws WebApiException {
         return this.mapper.toDto(this.repository.findById(id)
-                .orElseThrow(() -> new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND)));
+                .orElseThrow(() -> {
+                    logErrorMessage(String.format("Entity with id %s not found", id));
+                    return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
+                }));
     }
 
     @Override
     public TDto update(TDto dto, ID id) throws WebApiException {
-        TEntity entity = this.repository.findById(id).orElseThrow(() -> new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND));
+        TEntity entity = this.repository.findById(id).orElseThrow(() -> {
+            logErrorMessage(String.format("Entity with id %s not found", id));
+            return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
+        });
         TEntity newValuesEntity = this.mapper.toEntity(dto);
         BeanUtils.copyProperties(newValuesEntity, entity, DEFAULT_IGNORE_PROPERTIES);
         try {
             return mapper.toDto(this.repository.save(entity));
         } catch (Exception e) {
+            logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -61,6 +72,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
         try {
             return this.mapper.toDto(this.repository.save(entity));
         } catch (Exception e) {
+            logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -70,7 +82,12 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
         try {
             this.repository.deleteById(id);
         } catch (Exception e) {
+            logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.DELETE_FAILED);
         }
+    }
+
+    protected void logErrorMessage(String message) {
+        logger.error(message, this.getClass());
     }
 }

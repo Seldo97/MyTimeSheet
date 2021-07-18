@@ -21,14 +21,17 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
     @Override
     public TDto update(TDto dto, ID id) throws WebApiException {
         TEntity entity = this.extendedRepository.findById(id)
-                .orElseThrow(() -> new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> {
+                    logErrorMessage(String.format("Entity with id %s not found", id));
+                    return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
+                });
         TEntity newValuesEntity = this.mapper.toEntity(dto);
         BeanUtils.copyProperties(newValuesEntity, entity, DEFAULT_IGNORE_PROPERTIES);
         entity.setEditDate(LocalDateTime.now());
         try {
             return mapper.toDto(this.extendedRepository.save(entity));
         } catch (Exception e) {
-            e.printStackTrace();
+            logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -42,6 +45,7 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
             return this.mapper.toDto(this.extendedRepository.save(entity));
         } catch (Exception e) {
             e.printStackTrace();
+            logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -54,6 +58,7 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
             entity.setRemoved(true);
             this.extendedRepository.save(entity);
         } catch (Exception e) {
+            logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.DELETE_FAILED);
         }
     }

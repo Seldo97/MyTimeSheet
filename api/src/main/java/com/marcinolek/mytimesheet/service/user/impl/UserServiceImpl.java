@@ -1,42 +1,33 @@
 package com.marcinolek.mytimesheet.service.user.impl;
 
 import com.marcinolek.mytimesheet.constants.exception.WebApiExceptionType;
-import com.marcinolek.mytimesheet.dto.user.PermissionDTO;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
-import com.marcinolek.mytimesheet.dto.user.UserWithGroupsDTO;
 import com.marcinolek.mytimesheet.dto.user.UserWithPasswordDTO;
 import com.marcinolek.mytimesheet.entity.user.UserEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
-import com.marcinolek.mytimesheet.mapper.user.PermissionMapper;
 import com.marcinolek.mytimesheet.mapper.user.UserMapper;
-import com.marcinolek.mytimesheet.mapper.user.UserWithGroupsMapper;
 import com.marcinolek.mytimesheet.mapper.user.UserWithPasswordMapper;
-import com.marcinolek.mytimesheet.repository.user.PermissionRepository;
 import com.marcinolek.mytimesheet.repository.user.UserRepository;
 import com.marcinolek.mytimesheet.service.base.impl.AbstractCrudExtendedServiceImpl;
-import com.marcinolek.mytimesheet.service.base.impl.AbstractCrudServiceImpl;
 import com.marcinolek.mytimesheet.service.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity, UserDTO, Long> implements UserService, UserDetailsService {
 
+    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    PermissionRepository permissionRepository;
-
-    @Autowired
-    UserWithGroupsMapper userWithGroupsMapper;
 
     @Autowired
     UserWithPasswordMapper userWithPasswordMapper;
@@ -44,35 +35,27 @@ public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity,
     @Autowired
     UserMapper userMapper;
 
-    @Autowired
-    PermissionMapper permissionMapper;
-
     @Override
-    public UserWithGroupsDTO findByIdWithGroups(Long id) throws WebApiException {
-        return this.userWithGroupsMapper.toDto(this.userRepository.findByIdWithGroups(id)
-                .orElseThrow(() -> new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND)));
-    }
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<UserEntity> optionalUserEntity = userRepository.findByUsernameIgnoreCase(username);
+        if (optionalUserEntity.isPresent()) {
+            UserEntity userEntity = optionalUserEntity.get();
+            UserWithPasswordDTO userDTO = this.userWithPasswordMapper.toDto(userEntity);
 
-    @Override
-    public List<UserWithGroupsDTO> findAllWithGroups() throws WebApiException {
-        return this.userWithGroupsMapper.toDtoList(this.userRepository.findAllWithGroups());
+            return new org.springframework.security.core.userdetails.User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getRoles());
+        } else {
+            logErrorMessage(String.format("User with username %s not found", username));
+            throw new UsernameNotFoundException(WebApiExceptionType.USER_NOT_FOUND.toString());
+        }
     }
 
     @Override
     public UserDTO findUserByUsername(String username) throws WebApiException {
-        return this.userMapper.toDto(userRepository.findByUsernameIgnoreCase(username).
-                orElseThrow(() -> new UsernameNotFoundException(WebApiExceptionType.USER_NOT_FOUND.toString())));
-    }
-
-    @Override
-    public Set<PermissionDTO> getPermissionsByUserId(Long id) {
-        return this.permissionMapper.toDtoSet(this.permissionRepository.getPermissionsByUserId(id));
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserWithPasswordDTO userDTO = this.userWithPasswordMapper.toDto(userRepository.findByUsernameIgnoreCase(username).
-                orElseThrow(() -> new UsernameNotFoundException(WebApiExceptionType.USER_NOT_FOUND.toString())));
-        return new org.springframework.security.core.userdetails.User(userDTO.getUsername(), userDTO.getPassword(), Collections.emptyList());
+        return this.userMapper.toDto(this.userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> {
+                    logErrorMessage(String.format("User with username %s not found", username));
+                    return new WebApiException(WebApiExceptionType.USER_NOT_FOUND);
+                }));
     }
 }
