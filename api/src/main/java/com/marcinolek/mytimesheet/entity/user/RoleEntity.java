@@ -19,5 +19,9 @@ import javax.persistence.Table;
 public class RoleEntity extends AbstractEntity {
 
     String name;
-    
+
+    public RoleEntity(Long id, String name) {
+        super(id);
+        this.name = name;
+    }
 }

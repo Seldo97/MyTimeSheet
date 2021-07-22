@@ -42,4 +42,14 @@ public class UserEntity extends AbstractExtendedEntity {
         this.username = username;
         this.password = password;
     }
+
+    public UserEntity(Long id, LocalDateTime createDate, LocalDateTime editDate, String createdBy, String editedBy, Boolean removed, String name, String lastname, String email, String username, String password, List<RoleEntity> roles) {
+        super(id, createDate, editDate, createdBy, editedBy, removed);
+        this.name = name;
+        this.lastname = lastname;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+    }
 }

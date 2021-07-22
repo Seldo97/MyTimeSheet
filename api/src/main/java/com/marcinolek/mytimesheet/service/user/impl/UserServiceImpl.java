@@ -3,10 +3,12 @@ package com.marcinolek.mytimesheet.service.user.impl;
 import com.marcinolek.mytimesheet.constants.exception.WebApiExceptionType;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
 import com.marcinolek.mytimesheet.dto.user.UserWithPasswordDTO;
+import com.marcinolek.mytimesheet.dto.user.UserWithRolesDTO;
 import com.marcinolek.mytimesheet.entity.user.UserEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
 import com.marcinolek.mytimesheet.mapper.user.UserMapper;
 import com.marcinolek.mytimesheet.mapper.user.UserWithPasswordMapper;
+import com.marcinolek.mytimesheet.mapper.user.UserWithRolesMapper;
 import com.marcinolek.mytimesheet.repository.user.UserRepository;
 import com.marcinolek.mytimesheet.service.base.impl.AbstractCrudExtendedServiceImpl;
 import com.marcinolek.mytimesheet.service.user.UserService;
@@ -33,8 +35,31 @@ public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity,
     UserWithPasswordMapper userWithPasswordMapper;
 
     @Autowired
+    UserWithRolesMapper userWithRolesMapper;
+
+    @Autowired
     UserMapper userMapper;
 
+
+    @Override
+    public UserWithRolesDTO getUserWithRolesById(Long id) throws WebApiException {
+        return this.userWithRolesMapper.toDto(this.userRepository.findByIdWithRoles(id)
+                .orElseThrow(() -> {
+                    this.logErrorMessage(String.format("User with id %s not found", id));
+                    return new WebApiException(WebApiExceptionType.USER_NOT_FOUND);
+                }));
+    }
+
+    @Override
+    public UserDTO getUserByUsername(String username) throws WebApiException {
+        return this.userMapper.toDto(this.userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> {
+                    this.logErrorMessage(String.format("User with username %s not found", username));
+                    return new WebApiException(WebApiExceptionType.USER_NOT_FOUND);
+                }));
+    }
+
+    // Method from UserDetailsService to authentication
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -45,17 +70,9 @@ public class UserServiceImpl extends AbstractCrudExtendedServiceImpl<UserEntity,
 
             return new org.springframework.security.core.userdetails.User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getRoles());
         } else {
-            logErrorMessage(String.format("User with username %s not found", username));
+            this.logErrorMessage(String.format("User with username %s not found", username));
             throw new UsernameNotFoundException(WebApiExceptionType.USER_NOT_FOUND.toString());
         }
     }
 
-    @Override
-    public UserDTO findUserByUsername(String username) throws WebApiException {
-        return this.userMapper.toDto(this.userRepository.findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> {
-                    logErrorMessage(String.format("User with username %s not found", username));
-                    return new WebApiException(WebApiExceptionType.USER_NOT_FOUND);
-                }));
-    }
 }

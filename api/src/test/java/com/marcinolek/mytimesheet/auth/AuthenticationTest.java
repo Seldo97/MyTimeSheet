@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest()
 @AutoConfigureMockMvc
-public class AuthorizationTest {
+public class AuthenticationTest {
 
     @Autowired
     private MockMvc mvc;
@@ -71,6 +71,18 @@ public class AuthorizationTest {
         mvc.perform(MockMvcRequestBuilders.get("/api/auth/is-authenticated")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andExpect(status().isOk());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/auth/is-common-user")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isOk());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/auth/is-premium-user")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/auth/is-admin")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isForbidden());
     }
 
     @Test

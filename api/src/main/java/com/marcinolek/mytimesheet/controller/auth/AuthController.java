@@ -35,7 +35,7 @@ public class AuthController extends BaseController {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-            UserDTO user = this.userService.findUserByUsername(request.getUsername());
+            UserDTO user = this.userService.getUserByUsername(request.getUsername());
             response.addHeader(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateToken(user));
 
             return user;
