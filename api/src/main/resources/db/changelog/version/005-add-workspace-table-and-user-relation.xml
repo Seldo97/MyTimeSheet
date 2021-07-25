@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="005-add-workspace-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="workspace"/>
+            </not>
+        </preConditions>
+        <createTable tableName="workspace">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="005-add-user_workspace-relation-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_workspace"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_workspace">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint"/>
+            <column name="workspace_id" type="bigint"/>
+            <column name="permission_type" type="varchar(50)"/>
+        </createTable>
+
+        <addForeignKeyConstraint  baseColumnNames="user_id"
+                                  baseTableName="user_workspace"
+                                  constraintName="fk_user_workspace_user_rel"
+                                  onDelete="CASCADE"
+                                  referencedColumnNames="id"
+                                  referencedTableName="users"/>
+
+        <addForeignKeyConstraint  baseColumnNames="workspace_id"
+                                  baseTableName="user_workspace"
+                                  constraintName="fk_user_workspace_workspace_rel"
+                                  onDelete="CASCADE"
+                                  referencedColumnNames="id"
+                                  referencedTableName="workspace"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -89,4 +89,5 @@
             <column name="password" value="$2a$10$58cVpAuMkuK04Duml3x2IObGWcH/tY4/OESlNxPLqSsmc.5YJdtVO"/>
         </insert>
     </changeSet>
+
 </databaseChangeLog>

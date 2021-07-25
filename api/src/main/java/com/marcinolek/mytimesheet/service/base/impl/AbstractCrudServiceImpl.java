@@ -5,6 +5,7 @@ import com.marcinolek.mytimesheet.dto.base.AbstractDTO;
 import com.marcinolek.mytimesheet.dto.pagination.PaginationRequestDTO;
 import com.marcinolek.mytimesheet.entity.base.AbstractEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
+import com.marcinolek.mytimesheet.infrastructure.provider.LoggedUserProvider;
 import com.marcinolek.mytimesheet.mapper.base.AbstractMapper;
 import com.marcinolek.mytimesheet.repository.base.AbstractRepository;
 import com.marcinolek.mytimesheet.service.base.AbstractCrudService;
@@ -19,7 +20,8 @@ import org.springframework.data.domain.Sort;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TDto extends AbstractDTO, ID extends Serializable> implements AbstractCrudService<TEntity, TDto, ID> {
+public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TDto extends AbstractDTO, ID extends Serializable>
+        implements AbstractCrudService<TEntity, TDto, ID> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -28,6 +30,9 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
 
     @Autowired
     protected AbstractMapper<TDto, TEntity> mapper;
+
+    @Autowired
+    protected LoggedUserProvider loggedUserProvider;
 
     @Override
     public List<TDto> findAll() {

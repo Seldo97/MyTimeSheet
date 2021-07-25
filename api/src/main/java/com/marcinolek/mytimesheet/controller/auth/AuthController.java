@@ -51,9 +51,7 @@ public class AuthController extends BaseController {
     }
 
     @GetMapping("/is-authenticated")
-    public boolean isUserAuthenticated() {
-        return true;
-    }
+    public boolean isUserAuthenticated() { return true; }
 
     @GetMapping("/is-admin")
     @Secured(RoleType.ADMIN)

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="006-add-task-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="workspace" />
+            <not>
+                <tableExists tableName="task" />
+            </not>
+        </preConditions>
+        <createTable tableName="task">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="name" type="varchar(50)" />
+            <column name="workspace_id" type="bigint" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="task"
+                                 baseColumnNames="workspace_id"
+                                 constraintName="fk_task_workspace"
+                                 referencedTableName="workspace"
+                                 referencedColumnNames="id" />
+
+    </changeSet>
+
+    <changeSet id="006-add-tag-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="task" />
+            <not>
+                <tableExists tableName="tag"/>
+            </not>
+        </preConditions>
+        <createTable tableName="tag">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)" />
+            <column name="task_id" type="bigint" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="tag"
+                                 baseColumnNames="task_id"
+                                 constraintName="fk_tag_task"
+                                 referencedTableName="task"
+                                 referencedColumnNames="id" />
+
+    </changeSet>
+
+</databaseChangeLog>

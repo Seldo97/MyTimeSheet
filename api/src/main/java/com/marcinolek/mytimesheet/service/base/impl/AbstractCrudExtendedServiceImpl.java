@@ -28,6 +28,7 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
         TEntity newValuesEntity = this.mapper.toEntity(dto);
         BeanUtils.copyProperties(newValuesEntity, entity, DEFAULT_IGNORE_PROPERTIES);
         entity.setEditDate(LocalDateTime.now());
+        entity.setEditedBy(this.loggedUserProvider.getUsername());
         try {
             return mapper.toDto(this.extendedRepository.save(entity));
         } catch (Exception e) {
@@ -41,6 +42,7 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
         TEntity entity = this.mapper.toEntity(dto);
         entity.setRemoved(false);
         entity.setCreateDate(LocalDateTime.now());
+        entity.setCreatedBy(this.loggedUserProvider.getUsername());
         try {
             return this.mapper.toDto(this.extendedRepository.save(entity));
         } catch (Exception e) {

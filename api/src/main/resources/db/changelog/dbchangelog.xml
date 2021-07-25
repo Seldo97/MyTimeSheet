@@ -9,5 +9,8 @@
     <include file="version/002-add-user_group-table-and-users-relation.xml" relativeToChangelogFile="true"/>
     <include file="version/003-add-permission-table-and-user_group-relation.xml" relativeToChangelogFile="true"/>
     <include file="version/004-refactor-user-groups-and-roles.xml" relativeToChangelogFile="true"/>
+    <include file="version/005-add-workspace-table-and-user-relation.xml" relativeToChangelogFile="true"/>
+    <include file="version/006-add-task-and-tag-table.xml" relativeToChangelogFile="true"/>
+    <include file="version/007-add-timesheet-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

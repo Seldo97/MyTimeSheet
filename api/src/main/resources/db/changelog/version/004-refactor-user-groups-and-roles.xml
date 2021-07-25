@@ -126,4 +126,28 @@
 
     </changeSet>
 
+    <changeSet id="004-remove-cascade-from-role-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <tableExists tableName="role"/>
+            <tableExists tableName="user_role"/>
+            <foreignKeyConstraintExists foreignKeyName="fk_user_user_role_relation"/>
+            <foreignKeyConstraintExists foreignKeyName="fk_role_user_role_relation"/>
+        </preConditions>
+
+        <dropForeignKeyConstraint baseTableName="user_role" constraintName="fk_user_user_role_relation"/>
+        <dropForeignKeyConstraint baseTableName="user_role" constraintName="fk_role_user_role_relation"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_role"
+                                 constraintName="fk_user_user_role_relation"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user_role"
+                                 constraintName="fk_role_user_role_relation"
+                                 referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+
 </databaseChangeLog>

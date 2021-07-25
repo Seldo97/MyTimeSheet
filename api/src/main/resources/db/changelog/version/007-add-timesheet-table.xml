@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="007-add-timesheet-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="task" />
+            <tableExists tableName="users" />
+            <not>
+                <tableExists tableName="timesheet"/>
+            </not>
+        </preConditions>
+        <createTable tableName="timesheet">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint" />
+            <column name="task_id" type="bigint" />
+            <column name="date" type="date" />
+            <column name="start_time" type="time" />
+            <column name="end_time" type="time" />
+            <column name="time_spent_min" type="int" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="timesheet"
+                                 baseColumnNames="task_id"
+                                 constraintName="fk_timesheet_task"
+                                 referencedTableName="task"
+                                 referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="timesheet"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_task"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id" />
+
+    </changeSet>
+
+    <changeSet id="007-add-timesheet_tag-table" author="olekm">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="tag" />
+            <tableExists tableName="timesheet" />
+            <not>
+                <tableExists tableName="timesheet_tag"/>
+            </not>
+        </preConditions>
+        <createTable tableName="timesheet_tag">
+            <column name="tag_id" type="bigint" />
+            <column name="timesheet_id" type="bigint" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="timesheet_tag"
+                                 baseColumnNames="tag_id"
+                                 constraintName="fk_timesheet_tag_tag_rel"
+                                 referencedTableName="tag"
+                                 referencedColumnNames="id" />
+
+        <addForeignKeyConstraint baseTableName="timesheet_tag"
+                                 baseColumnNames="timesheet_id"
+                                 constraintName="fk_timesheet_tag_timesheet_rel"
+                                 referencedTableName="timesheet"
+                                 referencedColumnNames="id" />
+
+    </changeSet>
+
+</databaseChangeLog>
