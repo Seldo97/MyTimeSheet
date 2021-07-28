@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +70,15 @@ public class AuthController extends BaseController {
     @Secured(RoleType.PREMIUM_USER)
     public boolean isUserPremiumUser() {
         return true;
+    }
+
+    protected boolean isHasRole(String role) throws WebApiException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(role))) {
+            return true;
+        } else {
+            throw new WebApiException(WebApiExceptionType.NO_PERMISSION_TO_RESOURCE);
+        }
     }
 
 }

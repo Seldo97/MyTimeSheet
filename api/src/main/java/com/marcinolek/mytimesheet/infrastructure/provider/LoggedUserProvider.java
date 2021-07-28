@@ -32,4 +32,5 @@ public class LoggedUserProvider {
     public UserDTO getUser() throws WebApiException {
         return this.userService.findById(this.getId());
     }
+
 }
