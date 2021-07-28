@@ -3,6 +3,7 @@ package com.marcinolek.mytimesheet.service;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
 import com.marcinolek.mytimesheet.entity.user.UserEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
+import com.marcinolek.mytimesheet.infrastructure.provider.LoggedUserProvider;
 import com.marcinolek.mytimesheet.mapper.base.AbstractMapper;
 import com.marcinolek.mytimesheet.repository.base.AbstractExtendedRepository;
 import com.marcinolek.mytimesheet.service.base.AbstractCrudService;
@@ -37,6 +38,9 @@ public class AbstractCrudServiceOnUserTest {
     @Mock
     private AbstractExtendedRepository<UserEntity, Long> baseExtendedRepository;
 
+    @Mock
+    private LoggedUserProvider loggedUserProvider;
+
     @InjectMocks
     private AbstractCrudService<UserEntity, UserDTO, Long> service = new UserServiceImpl();
 //
@@ -62,7 +66,7 @@ public class AbstractCrudServiceOnUserTest {
     }
 
     @Test
-    void testFindByIdException() throws WebApiException {
+    void testFindByIdException() {
         Long id = 10L;
         given(this.baseExtendedRepository.findById(id)).willReturn(Optional.empty());
 
@@ -75,13 +79,13 @@ public class AbstractCrudServiceOnUserTest {
     }
 
     @Test
-    void testDeleteById() throws WebApiException {
+    void testDeleteById() {
         // given
         // when
         Long id = 3L;
         doAnswer(invocation -> {
             Object arg0 = invocation.getArgument(0);
-            assertEquals(3L, arg0);;
+            assertEquals(3L, arg0);
             return null;
         }).when(this.baseExtendedRepository).deleteById(any(Long.class));
         this.baseExtendedRepository.deleteById(id);
@@ -97,9 +101,7 @@ public class AbstractCrudServiceOnUserTest {
 
         // when
         // then
-        assertThatThrownBy(() -> {
-            this.service.deleteById(id);
-        }).isInstanceOf(WebApiException.class).hasMessage("DELETE_FAILED");
+        assertThatThrownBy(() -> this.service.deleteById(id)).isInstanceOf(WebApiException.class).hasMessage("DELETE_FAILED");
         verify(this.baseExtendedRepository, times(1)).findById(any(Long.class));
         verify(this.baseExtendedRepository, times(0)).save(any());
     }
@@ -123,6 +125,7 @@ public class AbstractCrudServiceOnUserTest {
         given(this.mapper.toEntity(newUser)).willReturn(entity);
         given(this.baseExtendedRepository.save(entity)).willReturn(entity);
         given(this.mapper.toDto(entity)).willReturn(toDto(entity));
+        given(this.loggedUserProvider.getUsername()).willReturn(anyString());
         // when
         UserDTO dto = this.service.create(newUser);
         // than
@@ -167,6 +170,7 @@ public class AbstractCrudServiceOnUserTest {
         given(this.mapper.toEntity(any())).willReturn(newValuesEntity);
         given(this.baseExtendedRepository.save(entity)).willReturn(entity);
         given(this.mapper.toDto(any())).willReturn(toDto(newValuesEntity));
+        given(this.loggedUserProvider.getUsername()).willReturn(anyString());
         // when
         UserDTO dto = this.service.update(newUser, 1L);
         // than

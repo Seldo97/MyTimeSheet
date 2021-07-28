@@ -50,7 +50,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
     public TDto findById(ID id) throws WebApiException {
         return this.mapper.toDto(this.repository.findById(id)
                 .orElseThrow(() -> {
-                    logErrorMessage(String.format("Entity with id %s not found", id));
+                    this.logErrorMessage(String.format("Entity with id %s not found", id));
                     return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
                 }));
     }
@@ -58,7 +58,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
     @Override
     public TDto update(TDto dto, ID id) throws WebApiException {
         TEntity entity = this.repository.findById(id).orElseThrow(() -> {
-            logErrorMessage(String.format("Entity with id %s not found", id));
+            this.logErrorMessage(String.format("Entity with id %s not found", id));
             return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
         });
         TEntity newValuesEntity = this.mapper.toEntity(dto);
@@ -66,7 +66,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
         try {
             return mapper.toDto(this.repository.save(entity));
         } catch (Exception e) {
-            logErrorMessage(e.getMessage());
+            this.logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -77,7 +77,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
         try {
             return this.mapper.toDto(this.repository.save(entity));
         } catch (Exception e) {
-            logErrorMessage(e.getMessage());
+            this.logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.SAVE_FAILED);
         }
     }
@@ -87,7 +87,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
         try {
             this.repository.deleteById(id);
         } catch (Exception e) {
-            logErrorMessage(e.getMessage());
+            this.logErrorMessage(e.getMessage());
             throw new WebApiException(WebApiExceptionType.DELETE_FAILED);
         }
     }
