@@ -14,7 +14,7 @@
             </not>
         </preConditions>
         <createTable tableName="timesheet">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="bigint" />

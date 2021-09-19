@@ -11,8 +11,6 @@ import java.util.List;
 
 public interface AbstractCrudService<TEntity extends AbstractEntity, TDto extends AbstractDTO, ID extends Serializable> {
 
-    final String [] DEFAULT_IGNORE_PROPERTIES = {"id", "createDate", "editDate", "createdBy", "editedBy", "removed"};
-
     List<TDto> findAll();
 
     Page<TDto> findAll(PaginationRequestDTO paginationRequest);
@@ -24,4 +22,6 @@ public interface AbstractCrudService<TEntity extends AbstractEntity, TDto extend
     TDto create(TDto dto) throws WebApiException;
 
     void deleteById(ID id) throws WebApiException;
+
+    void deleteAll(List<TDto> dtoList) throws WebApiException;
 }

@@ -37,7 +37,7 @@ public class AuthenticationTest {
     private JwtTokenUtil jwtTokenUtil;
 
     @Test
-    public void generateJwtTokenTest() {
+    public void generateJwtTokenTest() throws WebApiException {
         UserDTO user = new UserDTO();
         user.setId(-99L);
         user.setUsername("xxxXXxxxTestXxxxXxx");

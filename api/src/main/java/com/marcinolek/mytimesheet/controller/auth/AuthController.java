@@ -1,11 +1,14 @@
 package com.marcinolek.mytimesheet.controller.auth;
 
+import com.marcinolek.mytimesheet.config.security.jwt.JwtTokenUtil;
 import com.marcinolek.mytimesheet.constants.exception.WebApiExceptionType;
 import com.marcinolek.mytimesheet.constants.permission.RoleType;
 import com.marcinolek.mytimesheet.controller.base.BaseController;
 import com.marcinolek.mytimesheet.dto.auth.AuthRequestDTO;
+import com.marcinolek.mytimesheet.dto.jwt.BlockedJwtDTO;
 import com.marcinolek.mytimesheet.dto.user.UserDTO;
 import com.marcinolek.mytimesheet.exception.WebApiException;
+import com.marcinolek.mytimesheet.service.jwt.BlockedJwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,9 @@ public class AuthController extends BaseController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private BlockedJwtService blockedJwtService;
+
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO login(@RequestBody AuthRequestDTO request, HttpServletResponse response) throws WebApiException {
         try {
@@ -47,8 +53,8 @@ public class AuthController extends BaseController {
     }
 
     @GetMapping("/logout")
-    public Long logout(@RequestHeader(value = "Authorization", required = false) String token) {
-       return this.jwtTokenUtil.getUserId(token);
+    public BlockedJwtDTO logout(@RequestHeader(value = "Authorization", required = false) String token) throws WebApiException {
+       return this.blockedJwtService.blockToken(JwtTokenUtil.getClearToken(token));
     }
 
     @GetMapping("/is-authenticated")

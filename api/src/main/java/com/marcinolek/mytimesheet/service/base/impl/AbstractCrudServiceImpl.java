@@ -25,6 +25,8 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    protected final String [] DEFAULT_IGNORE_PROPERTIES = {"id"};
+
     @Autowired
     protected AbstractRepository<TEntity, ID> repository;
 
@@ -62,7 +64,7 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
             return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
         });
         TEntity newValuesEntity = this.mapper.toEntity(dto);
-        BeanUtils.copyProperties(newValuesEntity, entity, DEFAULT_IGNORE_PROPERTIES);
+        BeanUtils.copyProperties(newValuesEntity, entity, this.getIgnoreProperties());
         try {
             return mapper.toDto(this.repository.save(entity));
         } catch (Exception e) {
@@ -92,7 +94,21 @@ public abstract class AbstractCrudServiceImpl<TEntity extends AbstractEntity, TD
         }
     }
 
+    @Override
+    public void deleteAll(List<TDto> dtoList) throws WebApiException {
+        try {
+            this.repository.deleteAll(this.mapper.toEntityList(dtoList));
+        } catch (Exception e) {
+            this.logErrorMessage(e.getMessage());
+            throw new WebApiException(WebApiExceptionType.DELETE_FAILED);
+        }
+    }
+
     protected void logErrorMessage(String message) {
         logger.error(message, this.getClass());
+    }
+
+    protected String[] getIgnoreProperties() {
+        return this.DEFAULT_IGNORE_PROPERTIES;
     }
 }

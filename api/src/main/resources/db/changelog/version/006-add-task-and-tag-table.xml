@@ -13,7 +13,7 @@
             </not>
         </preConditions>
         <createTable tableName="task">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" />
             </column>
             <column name="name" type="varchar(50)" />
@@ -36,7 +36,7 @@
             </not>
         </preConditions>
         <createTable tableName="tag">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar(50)" />

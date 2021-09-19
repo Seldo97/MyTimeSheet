@@ -12,7 +12,7 @@
             </not>
         </preConditions>
         <createTable tableName="users">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar(50)"/>
@@ -42,7 +42,9 @@
                 SELECT COUNT(*) FROM users u WHERE u.id = -1
             </sqlCheck>
         </preConditions>
-
+        <sql>
+            SET IDENTITY_INSERT users ON
+        </sql>
         <insert tableName="users">
             <column name="id" value="-1"/>
             <column name="name" value="Jon"/>
@@ -51,6 +53,9 @@
             <column name="username" value="admin"/>
             <column name="password" value="$2a$10$XEdD5HGWQZwfdoNSq/JTVOZQedg9V0TdiGNQ7Yz/9OTkqgzqEELEO"/>
         </insert>
+        <sql>
+            SET IDENTITY_INSERT users OFF
+        </sql>
     </changeSet>
 
     <changeSet id="001-add-users-for-tests" author="olekm">
@@ -72,6 +77,9 @@
             <where>id=-1</where>
         </update>
 
+        <sql>
+            SET IDENTITY_INSERT users ON
+        </sql>
         <insert tableName="users">
             <column name="id" value="-2"/>
             <column name="name" value="James"/>
@@ -88,6 +96,9 @@
             <column name="username" value="tester2"/>
             <column name="password" value="$2a$10$58cVpAuMkuK04Duml3x2IObGWcH/tY4/OESlNxPLqSsmc.5YJdtVO"/>
         </insert>
+        <sql>
+            SET IDENTITY_INSERT users OFF
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

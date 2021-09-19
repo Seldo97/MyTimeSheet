@@ -6,11 +6,13 @@ import com.marcinolek.mytimesheet.entity.base.AbstractExtendedEntity;
 import com.marcinolek.mytimesheet.exception.WebApiException;
 import com.marcinolek.mytimesheet.repository.base.AbstractExtendedRepository;
 import com.marcinolek.mytimesheet.service.base.AbstractCrudExtendedService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractExtendedEntity, TDto extends AbstractExtendedDTO, ID extends Serializable>
         extends AbstractCrudServiceImpl<TEntity, TDto, ID> implements AbstractCrudExtendedService<TEntity, TDto, ID> {
@@ -26,7 +28,7 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
                     return new WebApiException(WebApiExceptionType.ENTITY_NOT_FOUND);
                 });
         TEntity newValuesEntity = this.mapper.toEntity(dto);
-        BeanUtils.copyProperties(newValuesEntity, entity, DEFAULT_IGNORE_PROPERTIES);
+        BeanUtils.copyProperties(newValuesEntity, entity, this.getIgnoreProperties());
         entity.setEditDate(LocalDateTime.now());
         entity.setEditedBy(this.loggedUserProvider.getUsername());
         try {
@@ -65,4 +67,15 @@ public abstract class AbstractCrudExtendedServiceImpl<TEntity extends AbstractEx
         }
     }
 
+    @Override
+    public void deleteAll(List<TDto> dtoList) throws WebApiException {
+        for (TDto dto : dtoList) {
+            this.deleteById((ID) dto.getId());
+        }
+    }
+
+    @Override
+    protected String[] getIgnoreProperties() {
+        return ArrayUtils.addAll(super.getIgnoreProperties(), "createDate", "editDate", "createdBy", "editedBy", "removed");
+    }
 }

@@ -13,7 +13,7 @@
             </not>
         </preConditions>
         <createTable tableName="permission">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="user_group_id" type="bigint"/>
@@ -40,13 +40,18 @@
                 SELECT COUNT(*) FROM user_group p WHERE p.id = -1
             </sqlCheck>
         </preConditions>
-
+        <sql>
+            SET IDENTITY_INSERT permission ON
+        </sql>
         <insert tableName="permission">
             <column name="id" value="-1"/>
             <column name="user_group_id" value="-1"/>
             <column name="category" value="ADMIN"/>
             <column name="name" value="ADMIN_PERMISSION"/>
         </insert>
+        <sql>
+            SET IDENTITY_INSERT permission OFF
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

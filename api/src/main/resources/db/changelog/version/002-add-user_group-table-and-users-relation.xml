@@ -14,7 +14,7 @@
             </not>
         </preConditions>
         <createTable tableName="user_group">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar(50)"/>
@@ -57,7 +57,9 @@
                 SELECT COUNT(*) FROM user_group_relation ug WHERE ug.user_group_id = -1 AND ug.user_id = -1
             </sqlCheck>
         </preConditions>
-
+        <sql>
+            SET IDENTITY_INSERT user_group ON
+        </sql>
         <insert tableName="user_group">
             <column name="id" value="-1"/>
             <column name="name" value="admin_hidden"/>
@@ -67,5 +69,8 @@
             <column name="user_group_id" value="-1"/>
             <column name="user_id" value="-1"/>
         </insert>
+        <sql>
+            SET IDENTITY_INSERT user_group OFF
+        </sql>
     </changeSet>
 </databaseChangeLog>

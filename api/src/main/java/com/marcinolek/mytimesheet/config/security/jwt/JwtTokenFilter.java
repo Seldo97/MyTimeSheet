@@ -1,5 +1,6 @@
 package com.marcinolek.mytimesheet.config.security.jwt;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

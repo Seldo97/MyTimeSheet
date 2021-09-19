@@ -12,5 +12,6 @@
     <include file="version/005-add-workspace-table-and-user-relation.xml" relativeToChangelogFile="true"/>
     <include file="version/006-add-task-and-tag-table.xml" relativeToChangelogFile="true"/>
     <include file="version/007-add-timesheet-table.xml" relativeToChangelogFile="true"/>
+    <include file="version/008-add-jwt_black_list-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
